@@ -12,9 +12,16 @@ namespace Start
 {
     public partial class FrmRoles : Form
     {
+        internal object Style;
+
         public FrmRoles()
         {
             InitializeComponent();
+        }
+
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+
         }
     }
 }

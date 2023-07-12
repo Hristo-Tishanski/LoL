@@ -1,15 +1,18 @@
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 
 namespace Start
 {
 
+
+
     public partial class Form1 : Form
     {
-
 
 
 
@@ -19,18 +22,21 @@ namespace Start
 
         public static List<Roles> RegionsList = new List<Roles>();
 
-        public static List<Roles> AlphabeticalList = new List<Roles>();
+        public static List<Roles> ReleaseDateList = new List<Roles>();
 
         public static List<Roles> ClassesList = new List<Roles>();
+
+        public static List<Roles> AlphabeticalList = new List<Roles>();
 
         public Form1()
         {
             InitializeComponent();
-
             DataInitializationRoles();
             DataInitializationRegions();
             DataInitializationAlphabetical();
             DataInitializationClasses();
+            DataInitializationReleaseDates();
+            CenterToScreen();
 
             gameTitle.Text = "League Of Legends";
             gameTitle.Font = new Font("Arial", 30);
@@ -88,6 +94,31 @@ namespace Start
             });
 
         }
+        public void DataInitializationReleaseDates()
+        {
+            foreach (var role in Data.releaseDates)
+            {
+                ReleaseDateList.Add(new Roles(role, ReleaseDateList.Count));
+            }
+
+            foreach (var champ in Data.allChampionReleaseDates)
+            {
+                ChampionsList.Add(new Champions(champ.Split("-")[1]));
+            }
+
+            ReleaseDateList.ForEach(r =>
+            {
+                foreach (var champ in Data.allChampionReleaseDates)
+                {
+                    var role = champ.Split("-")[0];
+
+                    if (role == r.Name)
+                    {
+                        r.Champions.Add(ChampionsList.FirstOrDefault(z => z.Name == champ.Split("-")[1]));
+                    }
+                }
+            });
+        }
         public void DataInitializationClasses()
         {
             foreach (var role in Data.allClasses)
@@ -113,7 +144,7 @@ namespace Start
                 }
             });
         }
-            public void DataInitializationAlphabetical()
+        public void DataInitializationAlphabetical()
         {
             foreach (var role in Data.alphabet)
             {
@@ -158,7 +189,10 @@ namespace Start
 
 
             frmroles.BackColor = Color.DarkBlue;
-            frmroles.treeView1.ExpandAll();
+            frmroles.treeView1.CollapseAll();
+
+            frmroles.treeView1.ForeColor = Color.White;
+            frmroles.treeView1.BackColor = Color.Black;
 
 
             frmroles.Show();
@@ -181,7 +215,7 @@ namespace Start
 
 
             frmroles.BackColor = Color.DarkBlue;
-            frmroles.treeView1.ExpandAll();
+            frmroles.treeView1.CollapseAll();
 
 
             frmroles.Show();
@@ -189,22 +223,24 @@ namespace Start
 
         private void releaseDate_Click(object sender, EventArgs e)
         {
-            Form releaseDate = new Form();
-            releaseDate.Text = "Release Date";
-            releaseDate.Show();
+            FrmRoles frmroles = new();
 
-            CheckedListBox champions = new CheckedListBox();
-            foreach (var item in Data.allChampions)
+            frmroles.Text = "ReleaseDates";
+
+            var sorted = ReleaseDateList.OrderBy(s => s.SortIndex);
+
+            foreach (var item in sorted)
             {
-                champions.Items.Add(item);
-            }
-            champions.BackColor = Color.DarkBlue;
-            champions.Dock = DockStyle.Fill;
-            releaseDate.Controls.Add(champions);
-            champions.Show();
+                frmroles.treeView1.Nodes.Add(item.Name);
 
-            releaseDate.BackColor = Color.Coral;
-            releaseDate.Size = new Size(1000, 1000);
+                item.Champions.ForEach(c => frmroles.treeView1.Nodes[frmroles.treeView1.Nodes.Count - 1].Nodes.Add(c.Name));
+            }
+
+
+
+            frmroles.BackColor = Color.DarkBlue;
+            frmroles.treeView1.CollapseAll();
+            frmroles.Show();
         }
 
         private void championClass_Click(object sender, EventArgs e)
@@ -225,7 +261,7 @@ namespace Start
 
 
             frmroles.BackColor = Color.DarkBlue;
-            frmroles.treeView1.ExpandAll();
+            frmroles.treeView1.CollapseAll();
 
 
             frmroles.Show();
@@ -249,14 +285,12 @@ namespace Start
 
 
             frmroles.BackColor = Color.DarkBlue;
-            frmroles.treeView1.ExpandAll();
+            frmroles.treeView1.CollapseAll();
 
 
             frmroles.Show();
-            
-        }
 
+        }
     }
- X
 }
 
